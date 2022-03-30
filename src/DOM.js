@@ -5,6 +5,12 @@
   Считаем, что всегда передается тег, допускающий вставку текста в качестве своего содержимого (P, DIV, I и пр.).
 */
 export function appendToBody(tag, content, count) {
+    const body = document.getElementsByTagName('body')[0];
+    const elem = document.createElement(tag);
+    elem.innerHTML = content;
+    for (let i = 0; i < count; i++) {
+        body.insertAdjacentElement('afterbegin', elem.cloneNode(true));
+    }
 }
 
 /*
@@ -14,7 +20,24 @@ export function appendToBody(tag, content, count) {
   Каждый элемент должен иметь класс вида item_n, где n - глубина вложенности элемента. (Нумерацию ведем с единицы).
   Сформированное дерево верните в качестве результата работы функции.
 */
+
 export function generateTree(childrenCount, level) {
+    const div = document.createElement('div');
+    let class_name = 'item_';
+    div.className = class_name + 1;
+    document.body.insertAdjacentElement('afterbegin', div);
+    for (let i = 1; i < level; i++) {
+        let collection = document.getElementsByClassName(class_name + i);
+        const child = document.createElement('div');
+        child.className = class_name + (i + 1);
+        for (let j = 0; j < collection.length; j++)
+            for (let k = 0; k < childrenCount; k++)
+                collection[j].insertAdjacentElement(
+                    'afterbegin',
+                    child.cloneNode(),
+                );
+    }
+    return div;
 }
 
 /*
@@ -26,4 +49,14 @@ export function generateTree(childrenCount, level) {
   Сформированное дерево верните в качестве результата работы функции.
 */
 export function replaceNodes() {
+    const div = generateTree(2, 3);
+    const section = document.createElement('section');
+    const item_2 = document.getElementsByClassName('item_2')[0];
+    section.className = item_2.className;
+    const child = item_2.firstElementChild;
+    for (let i = 0; i < item_2.childElementCount; i++)
+        section.insertAdjacentElement('afterbegin', child.cloneNode(true));
+    for (let i = 0; i < div.childElementCount; i++)
+        div.children[i].replaceWith(section.cloneNode(true));
+    return div;
 }
